@@ -26,6 +26,32 @@ const updateStore = (state, newState) => {
     render(root, store);
 };
 
+const loadRover = (element) => {
+    const cardName = element.options[element.selectedIndex].value;
+    const curiosity = document.getElementById('curiosity_card');
+    const opportunity = document.getElementById('opportunity_card');
+    const spirit = document.getElementById('spirit_card');
+    switch (cardName) {
+        case 'curiosity':
+            curiosity.classList.remove('hidden');
+            opportunity.classList.add('hidden');
+            spirit.classList.add('hidden');
+            break;
+        case 'opportunity':
+            curiosity.classList.add('hidden');
+            opportunity.classList.remove('hidden');
+            spirit.classList.add('hidden');
+            break;
+        case 'spirit':
+            curiosity.classList.add('hidden');
+            opportunity.classList.add('hidden');
+            spirit.classList.remove('hidden');
+            break;
+        default:
+            break;
+    }
+};
+
 // Components
 
 const Greeting = (name) => {
@@ -57,19 +83,14 @@ const Footer = () => {
     `;
 };
 
-/*
-Launch Date
-Landing Date
-Status
-Most recently available photos
-Date the most recent photos were taken
-*/
-
 const Main = (state) => {
     const { roversPhotos } = state;
     if (!roversPhotos) {
         getMarsRovers(state);
-        return '<div class="loading">Loading!</div>';
+        return `<div class="loader">
+                    <h3>Loading!<h3>
+                    <img src="./assets/images/loader.gif">
+                </div>`;
     } else {
         let mainContenets = '';
         Object.keys(roversPhotos).forEach((key) => {
@@ -77,8 +98,33 @@ const Main = (state) => {
         });
         return `
         <main>
-        ${mainContenets}
+        ${RoverSelector(state)}
+        <div class="container">
+            ${mainContenets}    
+        </div>
         </main>`;
+    }
+};
+
+const RoverSelector = (state) => {
+    const { rovers } = state;
+    if (!rovers || rovers.length < 1) {
+        return `
+        <select id="roversSelector">
+            <option value="" name="">
+        </select>
+    `;
+    } else {
+        const roverSelector = rovers.reduce((acc, curr) => {
+            acc += `<option value="${curr.toLowerCase()}">Rover: ${curr}</option>`;
+            return acc;
+        }, '');
+        return `
+        <label for="roversSelector">Please Select Rover:</label>
+        <select id="roversSelector" onchange="loadRover(this)">
+            ${roverSelector}
+        </select>
+    `;
     }
 };
 
@@ -101,7 +147,7 @@ const GenerateRoverCard = (rover) => {
         }
     });
     return `
-        <section class="card">
+        <section id="${card.rover_name.toLowerCase()}_card" class="card">
             <h3>Mars Rover - ${card.rover_name}!</h3>
             <p>Launch Date: ${card.rover_landing_date}</p>
             <p>Landing Date: ${card.rover_launch_date}</p>

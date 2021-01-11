@@ -9,11 +9,15 @@ body {
     background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(238, 238, 238) 100%);
 }
 
+#root {
+    display: flex;
+    flex-direction: column;
+}
+
 header {
     /* header styles */
     background: rgb(169, 196, 236);
     color: white;
-    grid-area: hd;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -21,15 +25,10 @@ header {
 }
 
 main {
-    padding: 20px;
     grid-area: main;
     display: flex;
-    flex-direction: row;
-}
-
-.card {
-    background-color: wheat;
-    width: 100%;
+    flex-direction: column;
+    gap: 10px;
 }
 
 footer {
@@ -39,23 +38,85 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 5px;
     font-size: 0.7em;
-    grid-area: ft;
 }
 
-#root {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 15vh minmax(80vh, max-content) 5vh;
-    grid-template-areas:
-        'hd'
-        'main'
-        'ft';
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    background: rgb(6, 145, 173);
+    background: linear-gradient(180deg, rgba(6, 145, 173, 1) 0%, rgba(148, 237, 255, 1) 100%);
+    padding: 10px;
+    width: 100%;
+}
+
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loader h3 {
+    flex: 1;
+}
+
+.loader img {
+    flex: 1;
 }
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
     /* use mobile */
+    #root {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 15vh minmax(80vh, max-content) 5vh;
+        grid-template-areas:
+            'hd'
+            'main'
+            'ft';
+    }
+
+    header {
+        /* header styles */
+        /* background: rgb(169, 196, 236);
+        color: white; */
+        grid-area: hd;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    main {
+        padding: 20px;
+        grid-area: main;
+        gap: 10px;
+        /* display: flex;
+        flex-direction: row; */
+    }
+
+    footer {
+        /* footer styles */
+        /* display: flex;
+        align-items: center;
+        justify-content: center; */
+        grid-area: ft;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
 }
 
 /* -------------------  DESKTOP  -------------------- */
@@ -68,4 +129,8 @@ footer {
 
 @media (min-width: 1824px) {
     /* use mobile */
+}
+
+.hidden {
+    display: none;
 }
