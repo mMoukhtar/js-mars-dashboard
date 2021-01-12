@@ -52,25 +52,39 @@ const loadRover = (element) => {
     }
 };
 
+const capitalizeName = (name) => {
+    return name.toUpperCase();
+};
+
 // Components
 
-const Greeting = (name) => {
-    if (name) {
+// High order function 1
+const Greeting = (capitalize) => {
+    return (name) => {
+        if (name) {
+            return `
+                <h2>Welcome, ${capitalize(name)}!</h2>
+            `;
+        }
         return `
-            <h2>Welcome, ${name}!</h2>
+            <h1>Hello!</h1>
         `;
-    }
-
-    return `
-        <h1>Hello!</h1>
-    `;
+    };
 };
+
+/*
+function utilizePrefixer(prefix) {
+    return function(word) {
+    return `${prefix}${word}`
+    }
+}
+*/
 
 const Header = (state) => {
     return `
     <header>
         <h1>Mars Rover Dashboard</h1>
-        ${Greeting(state.user.name)}
+        ${Greeting(capitalizeName)(state.user.name)}
     </header>
     `;
 };
@@ -93,8 +107,9 @@ const Main = (state) => {
                 </div>`;
     } else {
         let mainContenets = '';
-        Object.keys(roversPhotos).forEach((key) => {
-            mainContenets += GenerateRoverCard(roversPhotos[key]);
+        const photos = roversPhotos.get('roversPhotos');
+        Object.keys(photos).forEach((key) => {
+            mainContenets += GenerateRoverCard(photos[key]);
         });
         return `
         <main>
@@ -152,18 +167,29 @@ const GenerateRoverCard = (rover) => {
             <p>Launch Date: ${card.rover_landing_date}</p>
             <p>Landing Date: ${card.rover_launch_date}</p>
             <p>Status: ${card.rover_status}</p>
-            <img src="${card.img}" height="350px" width="100%" />
+            ${generateRoverPhotos(cards)()}
             <p>
                 This photo is one of the most recent photos by this rover and was taken on: ${card.photo_date}
             </p>
         </section>`;
 };
 
+// High order function
+const generateRoverPhotos = (cards) => {
+    return () => {
+        return = cards.reduce((acc, curr) => {
+            acc += `<img src="${curr.img}" height="350px" width="100%" />`;
+            return acc;
+        }, '');
+    };
+};
+
 // API calls
 const getMarsRovers = (state) => {
     fetch('/marsRovers')
         .then((res) => res.json())
-        .then((roversPhotos) => {
+        .then((data) => {
+            const roversPhotos = Immutable.Map({ roversPhotos: data });
             updateStore(state, { roversPhotos });
         })
         .catch((err) => console.log('error', err));

@@ -27,24 +27,16 @@ app.get('/apod', async (req, res) => {
 
 // MARS Rovers
 app.get('/marsRovers', async (req, res) => {
-    let roversPhotos = {};
-    await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/latest_photos?api_key=${process.env.API_KEY}`)
-        .then((res) => res.json())
-        .then(({ latest_photos }) => {
-            Object.assign(roversPhotos, { curiosity: latest_photos });
-            return fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/latest_photos?api_key=${process.env.API_KEY}`);
-        })
-        .then((res) => res.json())
-        .then(({ latest_photos }) => {
-            Object.assign(roversPhotos, { opportunity: latest_photos });
-            return fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/latest_photos?api_key=${process.env.API_KEY}`);
-        })
-        .then((res) => res.json())
-        .then(({ latest_photos }) => {
-            Object.assign(roversPhotos, { spirit: latest_photos });
-            res.send(roversPhotos);
-        })
-        .catch((error) => console.log('error', error));
+    try {
+        const [curiosity, opportunity, spirit] = await Promise.all([
+            fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/latest_photos?api_key=${process.env.API_KEY}`).then((response) => response.json()),
+            fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/latest_photos?api_key=${process.env.API_KEY}`).then((response) => response.json()),
+            fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/latest_photos?api_key=${process.env.API_KEY}`).then((response) => response.json()),
+        ]);
+        res.send({ curiosity: curiosity.latest_photos, opportunity: opportunity.latest_photos, spirit: spirit.latest_photos });
+    } catch (error) {
+        console.log('error', error);
+    }
 });
 
 app.listen(port, () => {
@@ -66,7 +58,6 @@ const groupByRovers = (data) => {
             };
         }
         acc[curr.rover.name].photos.push({ camera: curr.camera, img_src: curr.img_src, earth_date: curr.earth_date });
-
         if (arr.length === index + 1) {
             return { rovers: acc };
         }
