@@ -1,8 +1,8 @@
-let store = {
-    user: { name: 'Student' },
-    roversPhotos: '',
-    rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-};
+let store = Immutable.Map({
+    user: Immutable.Map({ name: 'Student' }),
+    rovers: Immutable.List(['Curiosity', 'Opportunity', 'Spirit']),
+});
+
 const root = document.getElementById('root');
 
 window.addEventListener('load', () => {
@@ -22,7 +22,7 @@ const App = (state) => {
 };
 
 const updateStore = (state, newState) => {
-    Object.assign(state, newState);
+    store = state.merge({ roversPhotos: newState });
     render(root, store);
 };
 
@@ -72,19 +72,11 @@ const Greeting = (capitalize) => {
     };
 };
 
-/*
-function utilizePrefixer(prefix) {
-    return function(word) {
-    return `${prefix}${word}`
-    }
-}
-*/
-
 const Header = (state) => {
     return `
     <header>
         <h1>Mars Rover Dashboard</h1>
-        ${Greeting(capitalizeName)(state.user.name)}
+        ${Greeting(capitalizeName)(state.get('user').get('name'))}
     </header>
     `;
 };
@@ -98,7 +90,7 @@ const Footer = () => {
 };
 
 const Main = (state) => {
-    const { roversPhotos } = state;
+    const roversPhotos = state.get('roversPhotos');
     if (!roversPhotos) {
         getMarsRovers(state);
         return `<div class="loader">
@@ -122,7 +114,7 @@ const Main = (state) => {
 };
 
 const RoverSelector = (state) => {
-    const { rovers } = state;
+    const rovers = state.get('rovers').toArray();
     if (!rovers || rovers.length < 1) {
         return `
         <select id="roversSelector">
@@ -190,7 +182,7 @@ const getMarsRovers = (state) => {
         .then((res) => res.json())
         .then((data) => {
             const roversPhotos = Immutable.Map({ roversPhotos: data });
-            updateStore(state, { roversPhotos });
+            updateStore(state, roversPhotos);
         })
         .catch((err) => console.log('error', err));
 };
