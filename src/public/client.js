@@ -177,7 +177,7 @@ const GenerateRoverCard = (rover) => {
 // High order function
 const generateRoverPhotos = (cards) => {
     return () => {
-        return = cards.reduce((acc, curr) => {
+        return cards.reduce((acc, curr) => {
             acc += `<img src="${curr.img}" height="350px" width="100%" />`;
             return acc;
         }, '');
